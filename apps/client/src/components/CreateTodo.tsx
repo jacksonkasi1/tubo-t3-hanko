@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { trpc } from "@/trpc/react";
-// import { todoInputSchema } from "@repo/server/src/types";
 import { ZodError } from "zod";
 
 export function CreateTodo() {
@@ -10,7 +9,7 @@ export function CreateTodo() {
   const createPost = trpc.todo.createTodo.useMutation();
   const utils = trpc.useContext();
 
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Function to automatically focus on the input element
   const focusInput = () => {
@@ -28,32 +27,13 @@ export function CreateTodo() {
     e.preventDefault();
 
     try {
-      // Validate the input data using Zod schema
-      // const validatedData = todoInputSchema.parse({ text: todo });
-      // console.log("Input is valid:", validatedData);
 
       // Trigger the createTodo mutation
       await createPost.mutate(
         { text: todo },
         {
-          onSettled: () => {
-            // Cancel any outgoing refetches
-            // (so they don't overwrite our optimistic update)
-            utils.todo.all.cancel();
-
-            // Optimistically update to the new value
-            const newTodo = { id: "1", text: todo, done: false };
-
-            const previousTodos = utils.todo.all.getData();
-
-            const updatedTodos = [...previousTodos, newTodo];
-            utils.todo.all.setData(undefined, updatedTodos);
-            setTodo(""); // Clear the input field on success
-
-            return { ...previousTodos, newTodo };
-          },
           onError: (error, newTodo, context) => {
-            console.log({newTodo, context});
+            console.log({ newTodo, context });
             console.log("Input is invalid:", error.message);
             setTodo("");
             // utils.todo.all.setData(undefined, () => context.previousTodos);

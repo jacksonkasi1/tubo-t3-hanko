@@ -8,7 +8,7 @@ interface CustomRequest extends NextRequest {
 }
 
 export const config = {
-  matcher: ["/profile", "/"],
+  matcher: ["/profile", "/s"],
 };
 
 export default async function middleware(req: CustomRequest) {

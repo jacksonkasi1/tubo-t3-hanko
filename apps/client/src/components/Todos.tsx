@@ -22,7 +22,8 @@ const Todos = () => {
   return (
     <div>
       {todoList.length ? (
-        todoList.map((todo) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        todoList.map((todo: any) => {
           return <Todo key={todo.id} todo={todo} />;
         })
       ) : (

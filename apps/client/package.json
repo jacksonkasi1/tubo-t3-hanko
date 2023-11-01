@@ -17,6 +17,7 @@
     "@teamhanko/hanko-elements": "^0.9.0",
     "@trpc/client": "^10.1.0",
     "@trpc/next": "^10.43.0",
+    "@trpc/react-query": "^10.43.0",
     "@trpc/server": "^10.1.0",
     "clsx": "^2.0.0",
     "cn": "^0.1.1",
