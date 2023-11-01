@@ -1,21 +1,42 @@
-import { prisma } from "@repo/db";
-import { Elysia } from 'elysia'
-import { cors } from '@elysiajs/cors'
-import { trpc } from '@elysiajs/trpc'
+import { prisma } from '@repo/db'
+import * as trpcExpress from '@trpc/server/adapters/express'
+import express from 'express'
+import { expressHandler } from 'trpc-playground/handlers/express'
+import { appRouter } from './src/router'
 
-import {  appRouter } from './index'
+const runApp = async () => {
+  const app = express()
 
-const app = new Elysia()
-    .use(cors())
-    .get('/', () => 'Hello Elysia')
-    .use(
-        trpc(appRouter, {
-            endpoint: '/api/trpc',
-            createContext: () => ({
-                prisma,
-            })
-        })
-    )
-    .listen(5000)
+  const trpcApiEndpoint = '/api/trpc'
+  const playgroundEndpoint = '/api/trpc-playground'
 
-console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
+  app.use(
+    trpcApiEndpoint,
+    trpcExpress.createExpressMiddleware({
+      router: appRouter,
+      createContext: () => ({
+        prisma,
+        auth: "auth"
+      }),
+    }),
+  )
+
+  app.use(
+    playgroundEndpoint,
+    await expressHandler({
+      trpcApiEndpoint,
+      playgroundEndpoint,
+      router: appRouter
+    }),
+  )
+
+  app.get("/", (req: express.Request, res: express.Response) => {
+    res.send("hello")
+  })
+
+  app.listen(5000, () => {
+    console.log('listening at http://localhost:5000')
+  })
+}
+
+runApp()
